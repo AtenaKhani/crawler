@@ -11,7 +11,7 @@ class crawler:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
 
-    def fetch_pages(self, session: ClientSession, page: int):
+    async def fetch_pages(self, session: ClientSession, page: int):
         async with session.get(f'{self.api_url}?pageIndex={page}', headers=self.headers) as response:
             try:
                 data = await response.json()
@@ -40,3 +40,15 @@ class crawler:
             'price': price_info.get('price', 'نامشخص')
         }
         return ad_info
+
+    async def create_and_run_tasks(self, pages: int):
+        all_data = []
+        async with aiohttp.ClientSession() as session:
+            tasks = [self.fetch_pages(session, page) for page in range(1, pages + 1)]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            for result in results:
+                if isinstance(result, list):
+                    all_data.extend(result)
+        print(len(all_data))
+
+
