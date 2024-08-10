@@ -25,9 +25,14 @@ class crawler:
             except aiohttp.ClientResponseError as e:
                 print(f"HTTP request error on page {page}: {e}")
 
+
     def extract_info(self, ad):
         details = ad.get('detail', {})
         price_info = ad.get('price', {})
+        if details is None:
+            details = {}
+        if price_info is None:
+            price_info = {}
         ad_info = {
             'title': details.get('title', 'نامشخص'),
             'color': details.get('color', 'نامشخص'),
