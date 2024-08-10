@@ -26,8 +26,17 @@ class crawler:
                 print(f"HTTP request error on page {page}: {e}")
 
     def extract_info(self, ad):
-
-
-
-                
-
+        details = ad.get('detail', {})
+        price_info = ad.get('price', {})
+        ad_info = {
+            'title': details.get('title', 'نامشخص'),
+            'color': details.get('color', 'نامشخص'),
+            'mileage': details.get('mileage', 'نامشخص'),
+            'location': details.get('location', 'نامشخص'),
+            'code': details.get('code', 'نامشخص'),
+            'url': details.get('url', 'نامشخص'),
+            'image': details.get('image', 'نامشخص'),
+            'time': details.get('time', 'نامشخص'),
+            'price': price_info.get('price', 'نامشخص')
+        }
+        return ad_info
