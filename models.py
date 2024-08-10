@@ -17,3 +17,13 @@ class Car(Base):
     price = Column(String)
 
 
+class Database:
+    def __init__(self, db_url):
+        self.engine = create_engine(db_url)
+        Base.metadata.create_all(self.engine)
+        self.Session = sessionmaker(bind=self.engine)
+
+    def save_data(self, ads):
+        with self.Session() as session:
+            session.bulk_save_objects(ads)
+            session.commit()
