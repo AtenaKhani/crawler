@@ -2,11 +2,13 @@ import aiohttp
 import asyncio
 from time import time
 from aiohttp.client import ClientSession
+from models import Car, Database
 
 
 class crawler:
-    def __init__(self, api_url: str):
+    def __init__(self, api_url: str, db: Database):
         self.api_url = api_url
+        self.db = db
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
@@ -25,7 +27,6 @@ class crawler:
             except aiohttp.ClientResponseError as e:
                 print(f"HTTP request error on page {page}: {e}")
 
-
     def extract_info(self, ad):
         details = ad.get('detail', {})
         price_info = ad.get('price', {})
@@ -33,18 +34,17 @@ class crawler:
             details = {}
         if price_info is None:
             price_info = {}
-        ad_info = {
-            'title': details.get('title', 'نامشخص'),
-            'color': details.get('color', 'نامشخص'),
-            'mileage': details.get('mileage', 'نامشخص'),
-            'location': details.get('location', 'نامشخص'),
-            'code': details.get('code', 'نامشخص'),
-            'url': details.get('url', 'نامشخص'),
-            'image': details.get('image', 'نامشخص'),
-            'time': details.get('time', 'نامشخص'),
-            'price': price_info.get('price', 'نامشخص')
-        }
-        return ad_info
+        return Car(
+            title=details.get('title', 'نامشخص'),
+            color=details.get('color', 'نامشخص'),
+            mileage=details.get('mileage', 'نامشخص'),
+            location=details.get('location', 'نامشخص'),
+            code=details.get('code', 'نامشخص'),
+            url=details.get('url', 'نامشخص'),
+            image=details.get('image', 'نامشخص'),
+            time=details.get('time', 'نامشخص'),
+            price=price_info.get('price', 'نامشخص')
+        )
 
     async def create_and_run_tasks(self, pages: int):
         all_data = []
@@ -54,11 +54,13 @@ class crawler:
             for result in results:
                 if isinstance(result, list):
                     all_data.extend(result)
+        self.db.save_data(all_data)
         print(len(all_data))
 
 
 if __name__ == "__main__":
-    fetcher = crawler('https://bama.ir/cad/api/search')
+    db = Database('sqlite:///car.db')
+    fetcher = crawler('https://bama.ir/cad/api/search', db)
     start = time()
     asyncio.run(fetcher.create_and_run_tasks(950))
-    print(f"زمان اجرا: {time() - start} ثانیه")
+    print(f"run time: {time() - start}seconds")
