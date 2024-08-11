@@ -55,12 +55,13 @@ class crawler:
                 if isinstance(result, list):
                     all_data.extend(result)
         self.db.save_data(all_data)
-        print(len(all_data))
+        print(f"{len(all_data)} ads have been successfully extracted and stored in the database.")
 
 
 if __name__ == "__main__":
     db = Database('sqlite:///car.db')
     fetcher = crawler('https://bama.ir/cad/api/search', db)
+    print("Crawling process started...")
     start = time()
     asyncio.run(fetcher.create_and_run_tasks(950))
-    print(f"run time: {time() - start}seconds")
+    print(f"run time: {time() - start} seconds")
