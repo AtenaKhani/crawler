@@ -63,5 +63,5 @@ if __name__ == "__main__":
     fetcher = crawler('https://bama.ir/cad/api/search', db)
     print("Crawling process started...")
     start = time()
-    asyncio.run(fetcher.create_and_run_tasks(950))
+    asyncio.run(fetcher.create_and_run_tasks(1))
     print(f"run time: {time() - start} seconds")
