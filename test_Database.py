@@ -2,7 +2,7 @@ import pytest
 from models import Database, Car
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def db():
     database = Database('sqlite:///:memory:')
     return database

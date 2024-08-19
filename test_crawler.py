@@ -1,6 +1,7 @@
+from test_database import db
 from unittest.mock import patch, AsyncMock
 import pytest
-from aiohttp import ClientSession
+from aiohttp.client import ClientSession
 from crawler import crawler
 
 
@@ -42,3 +43,32 @@ async def test_fetch_pages(mock_get, fetcher):
         assert len(data) == 1
         assert data[0].title == "test"
         assert data[0].price == "300000"
+
+
+def test_extract_info(fetcher):
+    ad = {
+        'detail': {
+            'title': 'test',
+            'color': 'red',
+            'mileage': '1000',
+            'location': 'city',
+            'code': '12345',
+            'url': 'http://example.com',
+            'image': 'http://imageurl.com',
+            'time': '2024-01-10',
+        },
+        'price': {
+            'price': '5000'
+        }
+    }
+    car = fetcher.extract_info(ad)
+
+    assert car.title == 'test'
+    assert car.color == 'red'
+    assert car.mileage == '1000'
+    assert car.location == 'city'
+    assert car.code == '12345'
+    assert car.url == 'http://example.com'
+    assert car.image == 'http://imageurl.com'
+    assert car.time == '2024-01-10'
+    assert car.price == '5000'
